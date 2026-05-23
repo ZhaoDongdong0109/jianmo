@@ -1,0 +1,296 @@
+[
+  {
+    "name": "方案A：满意度优先型",
+    "description": "追求景点数量和喜好度最大化, 适合精力充沛、希望多打卡的家庭",
+    "n_spots": 8,
+    "total_pref": 63.4,
+    "avg_drive": 1.5,
+    "max_load": 5,
+    "load_balance": 4,
+    "min_slack": 0.7,
+    "spots": [
+      "A5",
+      "A1",
+      "A10",
+      "A2",
+      "A8",
+      "A4",
+      "A9",
+      "A3"
+    ],
+    "days": [
+      {
+        "spots": [
+          "A5"
+        ],
+        "end_t": 13.7,
+        "pref": 7.2,
+        "drive": 1.2,
+        "load": 2,
+        "slack": 7.3
+      },
+      {
+        "spots": [
+          "A1",
+          "A10"
+        ],
+        "end_t": 18.2,
+        "pref": 16.2,
+        "drive": 1.2,
+        "load": 2,
+        "slack": 2.8
+      },
+      {
+        "spots": [
+          "A2",
+          "A8"
+        ],
+        "end_t": 20.2,
+        "pref": 17.5,
+        "drive": 1.7,
+        "load": 5,
+        "slack": 0.8
+      },
+      {
+        "spots": [
+          "A4",
+          "A9"
+        ],
+        "end_t": 20.3,
+        "pref": 15.0,
+        "drive": 2.8,
+        "load": 5,
+        "slack": 0.7
+      },
+      {
+        "spots": [
+          "A3"
+        ],
+        "end_t": 12.1,
+        "pref": 7.5,
+        "drive": 0.6,
+        "load": 1,
+        "slack": 8.9
+      }
+    ]
+  },
+  {
+    "name": "方案B：均衡稳健型",
+    "description": "兼顾满意度与时间弹性, 避免高耗时叠加, 适合一般家庭",
+    "n_spots": 8,
+    "total_pref": 63.2,
+    "avg_drive": 1.7,
+    "max_load": 3,
+    "load_balance": 1,
+    "min_slack": 2.5,
+    "spots": [
+      "A5",
+      "A10",
+      "A1",
+      "A8",
+      "A2",
+      "A4",
+      "A3",
+      "A7"
+    ],
+    "days": [
+      {
+        "spots": [
+          "A5",
+          "A10"
+        ],
+        "end_t": 18.0,
+        "pref": 14.8,
+        "drive": 1.5,
+        "load": 3,
+        "slack": 3.0
+      },
+      {
+        "spots": [
+          "A1",
+          "A8"
+        ],
+        "end_t": 18.5,
+        "pref": 16.9,
+        "drive": 1.5,
+        "load": 3,
+        "slack": 2.5
+      },
+      {
+        "spots": [
+          "A2"
+        ],
+        "end_t": 16.1,
+        "pref": 9.2,
+        "drive": 1.6,
+        "load": 3,
+        "slack": 4.9
+      },
+      {
+        "spots": [
+          "A4"
+        ],
+        "end_t": 17.0,
+        "pref": 8.0,
+        "drive": 3.0,
+        "load": 3,
+        "slack": 4.0
+      },
+      {
+        "spots": [
+          "A3",
+          "A7"
+        ],
+        "end_t": 15.9,
+        "pref": 14.3,
+        "drive": 0.9,
+        "load": 2,
+        "slack": 5.1
+      }
+    ]
+  },
+  {
+    "name": "方案C：轻松休闲型",
+    "description": "最大化时间弹性, 每日不赶路, 适合带幼儿或老人的家庭",
+    "n_spots": 7,
+    "total_pref": 53.0,
+    "avg_drive": 1.4,
+    "max_load": 3,
+    "load_balance": 2,
+    "min_slack": 2.5,
+    "spots": [
+      "A10",
+      "A1",
+      "A8",
+      "A3",
+      "A9",
+      "A5",
+      "A7"
+    ],
+    "days": [
+      {
+        "spots": [
+          "A10"
+        ],
+        "end_t": 13.5,
+        "pref": 7.6,
+        "drive": 1.0,
+        "load": 1,
+        "slack": 7.5
+      },
+      {
+        "spots": [
+          "A1",
+          "A8"
+        ],
+        "end_t": 18.5,
+        "pref": 16.9,
+        "drive": 1.5,
+        "load": 3,
+        "slack": 2.5
+      },
+      {
+        "spots": [
+          "A3"
+        ],
+        "end_t": 13.1,
+        "pref": 7.5,
+        "drive": 0.6,
+        "load": 1,
+        "slack": 7.9
+      },
+      {
+        "spots": [
+          "A9"
+        ],
+        "end_t": 14.0,
+        "pref": 7.0,
+        "drive": 2.0,
+        "load": 2,
+        "slack": 7.0
+      },
+      {
+        "spots": [
+          "A5",
+          "A7"
+        ],
+        "end_t": 16.7,
+        "pref": 14.0,
+        "drive": 1.7,
+        "load": 3,
+        "slack": 4.3
+      }
+    ]
+  },
+  {
+    "name": "方案D：深度体验型",
+    "description": "精选5个景点深度游览, 不追求打卡数量, 适合注重体验质量的家庭",
+    "n_spots": 6,
+    "total_pref": 49.199999999999996,
+    "avg_drive": 1.5,
+    "max_load": 3,
+    "load_balance": 2,
+    "min_slack": 3.0,
+    "spots": [
+      "A1",
+      "A2",
+      "A4",
+      "A8",
+      "A10",
+      "A3"
+    ],
+    "days": [
+      {
+        "spots": [
+          "A1"
+        ],
+        "end_t": 14.0,
+        "pref": 8.6,
+        "drive": 1.0,
+        "load": 1,
+        "slack": 7.0
+      },
+      {
+        "spots": [
+          "A2"
+        ],
+        "end_t": 16.1,
+        "pref": 9.2,
+        "drive": 1.6,
+        "load": 3,
+        "slack": 4.9
+      },
+      {
+        "spots": [
+          "A4"
+        ],
+        "end_t": 17.0,
+        "pref": 8.0,
+        "drive": 3.0,
+        "load": 3,
+        "slack": 4.0
+      },
+      {
+        "spots": [
+          "A8",
+          "A10"
+        ],
+        "end_t": 18.0,
+        "pref": 15.9,
+        "drive": 1.5,
+        "load": 3,
+        "slack": 3.0
+      },
+      {
+        "spots": [
+          "A3"
+        ],
+        "end_t": 12.1,
+        "pref": 7.5,
+        "drive": 0.6,
+        "load": 1,
+        "slack": 8.9
+      }
+    ]
+  }
+]

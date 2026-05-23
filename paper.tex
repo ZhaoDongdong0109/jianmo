@@ -1,0 +1,672 @@
+
+\documentclass[UTF8,a4paper,12pt]{ctexart}
+
+% =========================
+% 基础版式与宏包
+% =========================
+\usepackage{geometry}
+\geometry{left=2.55cm,right=2.55cm,top=2.45cm,bottom=2.45cm}
+\usepackage{amsmath,amssymb,bm}
+\usepackage{booktabs,longtable,array,tabularx,multirow,makecell}
+\usepackage{graphicx,float,caption,subcaption}
+\usepackage{xcolor}
+\usepackage{setspace}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage{indentfirst}
+\usepackage{siunitx}
+\usepackage{framed}
+
+\setstretch{1.30}
+\setlength{\parindent}{2em}
+\setlength{\headheight}{14pt}
+\setlength{\parskip}{0.15em}
+\captionsetup{font=small,labelsep=quad}
+\hypersetup{colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue}
+
+% =========================
+% 美化设置
+% =========================
+\definecolor{titleblue}{RGB}{31,78,121}
+\definecolor{softblue}{RGB}{232,242,250}
+\definecolor{softgreen}{RGB}{232,246,238}
+\definecolor{softorange}{RGB}{255,244,229}
+\definecolor{darkgray}{RGB}{80,80,80}
+
+\titleformat{\section}{\Large\bfseries\color{titleblue}}{\thesection}{0.8em}{}
+\titleformat{\subsection}{\large\bfseries\color{titleblue}}{\thesubsection}{0.8em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries}{\thesubsubsection}{0.6em}{}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small “五一”五日自驾景点优选与行程规划}
+\fancyhead[R]{\small 数学建模论文}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\newcommand{\ud}{\,\mathrm{d}}
+\newcommand{\E}{\mathrm{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\note}[1]{\begin{framed}\noindent\textbf{说明：}#1\end{framed}}
+
+\begin{document}
+
+% =========================
+% 封面
+% =========================
+\begin{titlepage}
+\centering
+\vspace*{1.6cm}
+{\zihao{1}\heiti\color{titleblue} “五一”五日自驾景点优选与行程规划\par}
+\vspace{0.8cm}
+{\zihao{3}\heiti 基于多维评价、动态规划与蒙特卡罗模拟的行程优化模型\par}
+\vspace{2.2cm}
+\begin{tabular}{rl}
+\zihao{4}\textbf{题目类型：} & \zihao{4} 数学建模 C 题 \\
+\zihao{4}\textbf{研究对象：} & \zihao{4} 三口之家五日自驾游 \\
+\zihao{4}\textbf{核心方法：} & \zihao{4} 熵权法、TOPSIS、多目标筛选、蒙特卡罗模拟 \\
+\end{tabular}
+\vfill
+{\zihao{4}\today\par}
+\end{titlepage}
+
+% =========================
+% 摘要
+% =========================
+\begin{abstract}
+本文围绕“五一”五日自驾出游中的景点优选、基准行程设计与随机扰动稳定性评估问题，建立了由“景点画像-行程筛选-可靠度分析”构成的三阶段数学模型。考虑到三口之家连续五日出游不仅追求景点数量和喜好满意度，还需要兼顾体力负荷、时间弹性和随机扰动风险，本文在题目给定约束基础上，对景点进行多维评价，并对第二问所得基准方案进行蒙特卡罗稳定性检验。
+
+针对\textbf{问题一}，本文首先将 10 个候选景点划分为人文休闲、亲子主题、自然山林和滨水生态四类。在题目要求的喜好度、游览耗时、通勤距离和拥堵敏感度基础上，进一步引入“整体舒适度/体力负荷协调度”作为贯穿性辅助指标，形成喜好度、耗时灵活性、通勤便利性、抗拥堵能力和整体舒适度五维评价体系。通过 Min--Max 标准化、熵权法赋权和 TOPSIS 综合评价，得到景点综合优先指数。结果表明，A1 古城老街、A8 亲子农庄、A10 文创小镇和 A3 滨海浴场为高优先级景点；A2 海洋乐园虽喜好度最高，但因耗时长、体力负荷高而综合排序未进入前四；A4 森林公园和 A6 山野溪谷因通勤距离远、耗时长和抗扰动能力弱而被划为低优先级。该结果为第二问选择核心景点和构造联动组合提供基础备选池。
+
+针对\textbf{问题二}，本文在无随机扰动条件下，建立以喜好总满意度、每日行车负荷、行程松紧均衡性和体力负荷协调性为目标的多目标筛选模型。通过“每日可行方案枚举+动态规划筛选”的方法，在满足每日最多 2 个景点、总景点数 5 至 8 个、开放时间和每日活动边界等约束下，生成五日基准行程。最终方案为：第 1 天 A5 民俗古村，第 2 天 A1 古城老街--A10 文创小镇，第 3 天 A2 海洋乐园--A8 亲子农庄，第 4 天 A4 森林公园--A9 山地观景台，第 5 天 A3 滨海浴场，共安排 8 个景点。该方案充分利用第一问识别出的 A1+A10、A2+A8、A4+A9 等联动组合，在理想条件下兼顾了家庭偏好与路线效率。
+
+针对\textbf{问题三}，本文重点评估第二问基准方案在随机扰动下的稳定性。道路堵车采用条件堵车模型：先以伯努利变量判断是否发生拥堵，若发生拥堵，再根据高峰/平峰时段从题目给定的均匀分布中抽取额外延时；入园排队按到达时段直接抽样；起床早餐整装、正餐就餐、入住/退房等通用耗时按 $T=T_0U(0.8,1.2)$ 独立随机模拟，并在稳定性评估中补充纳入第 1 至第 4 天返回酒店后的晚餐耗时。蒙特卡罗模拟结果表明，基准方案在轻度、中度、强扰动情景下整体可靠度分别约为 27.18\%、16.44\% 和 6.63\%，均未达到 90\% 稳定可靠度要求。中度扰动下，第 4 天 A4--A9 是最主要薄弱点，第 3 天 A2--A8 次之；失败主要表现为后续景点最小游览时长不达标。扰动贡献方面，入园排队贡献约 55.44\%，道路堵车约 34.35\%，通用耗时浮动约 10.21\%。整体舒适度指标能够有效解释第三问中第 3、4 天结构性薄弱点的形成原因。
+
+综上，本文得到一套无随机扰动条件下可行的高满意度基准行程，并证明其在五一随机扰动环境下存在明显稳定性不足。研究表明，若要求整体可靠度达到 90\% 以上，应减少高耗时、高负荷、远距离双景点组合，将 A2、A4 等高耗时景点单独成日，或引入 A3、A7、A10 等低负荷、时间弹性强的景点作为缓冲。
+\end{abstract}
+
+\noindent\textbf{关键词：} 景点优先级；熵权法；TOPSIS；多目标行程规划；蒙特卡罗模拟；可靠度分析；整体舒适度
+
+\newpage
+\tableofcontents
+\newpage
+
+% =========================================================
+\section{问题重述}
+
+“五一”小长假期间，某三口之家计划从居住地自驾前往同一文旅片区游玩，假期固定为 5 月 1 日至 5 月 5 日，全程入住市区同一家酒店。文旅片区共有 10 个成熟景点可供选择，各景点在类型、开放时间、游览时长、交通距离和家庭喜好度等方面存在差异。同时，五一出游具有典型的道路拥堵和景点入园排队不确定性，因此行程规划不能只追求景点数量和喜好度，还需要考虑行程稳定性。
+
+本文需要解决三个层次的问题。第一，建立景点特征分析模型，对 10 个景点进行类型归类、多维评价和联动组合识别，为后续行程设计提供备选池。第二，在无随机扰动条件下，设计一套满足题目硬性约束的五日基准行程，并明确每日景点顺序、车程、就餐和游览时段。第三，考虑分时段道路堵车、景点入园排队以及通用耗时浮动，利用数值模拟评估基准行程的可靠度，识别结构性薄弱点，并分析扰动来源。
+
+% =========================================================
+\section{模型假设}
+
+为便于建模，本文作如下假设：
+\begin{enumerate}[label=(\arabic*)]
+    \item 家庭成员每日从市区酒店出发，游玩结束后返回酒店；第 1 天先从居住地前往酒店，第 5 天游玩后退房返家。
+    \item 景点开放时间、最小游览时长、舒适游览时长、家庭喜好度和车程矩阵均以题目数据为准。
+    \item 问题一和问题二在理想条件下进行分析，不考虑道路堵车和入园排队随机扰动。
+    \item 问题三采用条件堵车模型。由于题目给出了发生拥堵后的额外延时分布，但未明确给出拥堵事件发生概率，因此本文将高峰和平峰拥堵概率作为情景参数。
+    \item 入园排队时间由到达景点时刻决定，直接按照题目给定高峰/平峰入园均匀分布抽样。
+    \item 起床早餐整装、正餐就餐、入住/退房等通用耗时在标准耗时的 $\pm20\%$ 范围内独立随机波动。
+    \item 若某景点实际可游览时间小于其最小游览时长，或当日活动结束时间超过 21:00，则判定该日行程失败。
+\end{enumerate}
+
+% =========================================================
+\section{符号说明}
+
+\begin{table}[H]
+\centering
+\caption{主要符号说明}
+\begin{tabularx}{0.92\textwidth}{cX}
+\toprule
+符号 & 含义 \\
+\midrule
+$A_i$ & 第 $i$ 个候选景点 \\
+$p_i$ & 景点 $i$ 的家庭喜好度 \\
+$T_i$ & 景点 $i$ 的舒适游览时长 \\
+$t_i^{\min}$ & 景点 $i$ 的最小游览时长 \\
+$d_{ij}$ & 点位 $i$ 到点位 $j$ 的基准车程 \\
+$F_i$ & 景点 $i$ 的耗时灵活性 \\
+$G_i$ & 景点 $i$ 的通勤便利性 \\
+$R_i$ & 景点 $i$ 的抗拥堵能力 \\
+$H_i$ & 景点 $i$ 的整体舒适度 \\
+$S_i$ & 景点 $i$ 的综合优先指数 \\
+$x_i$ & 景点 $i$ 是否被选中，取值为 0 或 1 \\
+$y_{id}$ & 景点 $i$ 是否安排在第 $d$ 天，取值为 0 或 1 \\
+$p_1,p_2$ & 高峰、平峰时段道路拥堵发生概率 \\
+$\Delta t_{\rm road}$ & 道路额外延时 \\
+$\Delta t_{\rm queue}$ & 入园排队时长 \\
+$T_0$ & 通用环节标准耗时 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% =========================================================
+\section{问题一：景点特征分析与组合优先级研究}
+
+\subsection{景点类型归类}
+
+根据景点主题属性，将 10 个候选景点划分为人文休闲类、亲子主题类、自然山林类和滨水生态类，如表 \ref{tab:type} 所示。
+
+\begin{table}[H]
+\centering
+\caption{景点类型归类结果}
+\label{tab:type}
+\begin{tabular}{cc}
+\toprule
+类别 & 景点 \\
+\midrule
+人文休闲类 & A1 古城老街、A5 民俗古村、A10 文创小镇 \\
+亲子主题类 & A2 海洋乐园、A8 亲子农庄 \\
+自然山林类 & A4 森林公园、A6 山野溪谷、A9 山地观景台 \\
+滨水生态类 & A3 滨海浴场、A7 环湖湿地 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+由表可知，候选景点类型丰富，既有高吸引力亲子主题景点，也有适合作为行程缓冲的滨水生态景点，还包括远郊自然山林类景点。不同类型景点在时间占用、体力消耗和随机扰动敏感性方面存在明显差异。
+
+\subsection{多维指标体系构建}
+
+题目要求从游览耗时、通勤距离、拥堵敏感度和喜好度四个维度筛选景点优先级。考虑到连续五日家庭自驾游还需避免体力负荷和时间压力过度集中，本文进一步引入“整体舒适度/体力负荷协调度”作为辅助指标，构建五维评价体系，如表 \ref{tab:indicators} 所示。
+
+\begin{table}[H]
+\centering
+\caption{景点多维特征指标}
+\label{tab:indicators}
+\begin{tabularx}{\textwidth}{p{3.0cm}X p{2.3cm}}
+\toprule
+指标 & 含义 & 指标方向 \\
+\midrule
+喜好度指标 & 家庭对景点的主观偏好程度，评分越高表示家庭越偏好该景点。 & 越大越好 \\
+耗时灵活性 & 由舒适游览时长反向刻画。舒适游览时长越短，说明该景点越容易与其他景点组合安排。 & 越大越好 \\
+通勤便利性 & 由酒店至景点车程和景点间平均车程共同刻画。车程越短，说明景点通勤成本越低。 & 越大越好 \\
+抗拥堵能力 & 综合考虑酒店至景点车程、景点间平均车程和景点关闭时间。车程越短、关闭时间越晚，说明行程受到堵车扰动后的缓冲空间越大。 & 越大越好 \\
+整体舒适度 & 综合考虑体力负荷、舒适游览时长和开放时间弹性。体力负荷越低、时间弹性越大，说明景点越适合作为家庭出游中的缓冲型景点。 & 越大越好 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{单项指标定义}
+
+\subsubsection{耗时灵活性}
+
+耗时灵活性用于刻画景点在单日行程中的组合安排难度。舒适游览时长越长，景点对当日时间资源的占用越大，与其他景点组合安排的灵活性越低。设第 $i$ 个景点舒适游览时长为 $T_i$，则耗时灵活性定义为
+\begin{equation}
+F_i=\frac{T_{\max}-T_i}{T_{\max}-T_{\min}},
+\end{equation}
+其中，$T_{\max}$ 和 $T_{\min}$ 分别为所有景点舒适游览时长的最大值和最小值。
+
+\subsubsection{通勤便利性}
+
+通勤便利性同时考虑酒店到景点的往返压力和景点之间的空间联动条件。设酒店到景点 $i$ 的车程为 $d_{0i}$，景点 $i$ 到其他景点的平均车程为 $\bar d_i$，则通勤成本为
+\begin{equation}
+D_i^{\rm com}=0.5d_{0i}+0.5\bar d_i.
+\end{equation}
+该值越小，表示通勤越便利。本文对其进行反向标准化，得到通勤便利性指标 $G_i$。
+
+\subsubsection{抗拥堵能力}
+
+抗拥堵能力衡量景点对道路随机延时的缓冲能力。若景点距离酒店较远、与其他景点平均车程较长、关闭时间较早，则发生堵车后更容易压缩游览时间。设开放时间紧张度为 $O_i$，则拥堵敏感成本为
+\begin{equation}
+D_i^{\rm jam}=0.45d_{0i}+0.35\bar d_i+0.20O_i.
+\end{equation}
+对该成本进行反向标准化后，得到抗拥堵能力 $R_i$。
+
+\subsubsection{整体舒适度}
+
+整体舒适度用于刻画景点在连续五日家庭自驾游中的体力负荷和节奏友好程度。设景点体力负荷等级为 $L_i$，低、中、高分别赋值为 1、2、3，则舒适度惩罚值为
+\begin{equation}
+C_i=0.5L_i+0.35T_i+0.15O_i.
+\end{equation}
+$C_i$ 越大，表示体力和时间压力越大。本文对其进行反向标准化，得到整体舒适度 $H_i$。
+
+\subsection{标准化、熵权法与 TOPSIS 综合评价}
+
+由于各原始变量量纲不同，且部分变量为成本型变量，需先进行标准化。对于效益型变量，采用
+\begin{equation}
+x'_{ij}=\frac{x_{ij}-\min(x_j)}{\max(x_j)-\min(x_j)}.
+\end{equation}
+对于成本型变量，采用
+\begin{equation}
+x'_{ij}=\frac{\max(x_j)-x_{ij}}{\max(x_j)-\min(x_j)}.
+\end{equation}
+经过处理后，所有指标均满足“数值越大越优”。
+
+设标准化矩阵为 $X=(x'_{ij})$，第 $j$ 个指标下第 $i$ 个景点的占比为
+\begin{equation}
+p_{ij}=\frac{x'_{ij}}{\sum_{i=1}^{n}x'_{ij}}.
+\end{equation}
+信息熵为
+\begin{equation}
+e_j=-\frac{1}{\ln n}\sum_{i=1}^{n}p_{ij}\ln p_{ij},
+\end{equation}
+差异系数为
+\begin{equation}
+d_j=1-e_j,
+\end{equation}
+权重为
+\begin{equation}
+w_j=\frac{d_j}{\sum_{j=1}^{m}d_j}.
+\end{equation}
+
+进一步采用 TOPSIS 法计算综合优先指数。设加权标准化矩阵为 $V=(v_{ij})=(w_jx'_{ij})$，正、负理想解为
+\begin{equation}
+V^+=\{\max_i v_{ij}\},\qquad V^-=\{\min_i v_{ij}\}.
+\end{equation}
+第 $i$ 个景点到正、负理想解的距离为
+\begin{equation}
+D_i^+=\sqrt{\sum_{j=1}^{m}(v_{ij}-v_j^+)^2},\qquad
+D_i^-=\sqrt{\sum_{j=1}^{m}(v_{ij}-v_j^-)^2}.
+\end{equation}
+综合优先指数为
+\begin{equation}
+S_i=\frac{D_i^-}{D_i^+ + D_i^-}.
+\end{equation}
+
+\subsection{多维指标与综合优先级结果}
+
+根据代码输出结果，得到表 \ref{tab:q1full}。表中各单项指标均已标准化到 $[0,1]$，0 和 1 分别表示该指标在 10 个候选景点中的相对最低值和相对最高值，并不代表绝对不可取或绝对最优。
+
+\begin{table}[H]
+\centering
+\caption{景点多维指标与综合优先级结果}
+\label{tab:q1full}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{ccccccccc}
+\toprule
+排名 & 景点 & 喜好度 & 耗时灵活性 & 通勤便利性 & 抗拥堵能力 & 整体舒适度 & 综合优先指数 & 优先级 \\
+\midrule
+1 & A1 古城老街 & 0.7500 & 0.6000 & 0.9609 & 0.7387 & 0.5062 & 0.6726 & 高 \\
+2 & A8 亲子农庄 & 0.6250 & 0.8000 & 0.8672 & 0.6734 & 0.5989 & 0.6511 & 高 \\
+3 & A10 文创小镇 & 0.3333 & 0.8000 & 1.0000 & 0.8520 & 0.8699 & 0.5846 & 高 \\
+4 & A3 滨海浴场 & 0.2917 & 0.8000 & 0.9688 & 1.0000 & 0.9127 & 0.5811 & 高 \\
+5 & A2 海洋乐园 & 1.0000 & 0.0000 & 0.7578 & 0.5931 & 0.0000 & 0.5498 & 中 \\
+6 & A7 环湖湿地 & 0.0000 & 1.0000 & 0.9141 & 0.9536 & 1.0000 & 0.5036 & 中 \\
+7 & A5 民俗古村 & 0.1667 & 0.8000 & 0.8516 & 0.6584 & 0.5936 & 0.4454 & 中 \\
+8 & A9 山地观景台 & 0.0833 & 1.0000 & 0.5391 & 0.4146 & 0.6809 & 0.4207 & 中 \\
+9 & A6 山野溪谷 & 0.4167 & 0.4000 & 0.2578 & 0.1974 & 0.1640 & 0.3282 & 低 \\
+10 & A4 森林公园 & 0.5000 & 0.2000 & 0.0000 & 0.0000 & 0.0766 & 0.3206 & 低 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+由表可知，A1 古城老街综合优先指数最高，其原因并非单一喜好度最高，而是通勤便利性强且整体表现均衡。A8 亲子农庄在喜好度、耗时灵活性和舒适度方面表现较均衡，排名第二。A10 文创小镇和 A3 滨海浴场虽然喜好度不是最高，但具有较强时间弹性和通勤优势，因此进入高优先级集合。A2 海洋乐园喜好度最高，但耗时灵活性和整体舒适度最低，说明其更适合作为单日核心景点。A4 森林公园通勤便利性和抗拥堵能力均为相对最低，后续行程中应谨慎安排。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{fig2_spot_priority_ranking.png}
+\caption{景点综合优先级排序}
+\label{fig:q1rank}
+\end{figure}
+
+\subsection{地理关系与景点联动组合}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.78\textwidth]{fig1_travel_time_heatmap.png}
+\caption{酒店与景点两两基准车程热力图}
+\label{fig:heatmap}
+\end{figure}
+
+图 \ref{fig:heatmap} 展示了酒店与各景点、景点之间的基准车程矩阵。车程较短的景点更适合在同一天联动安排。进一步分析家庭喜好度与酒店距离关系，如图 \ref{fig:prefdist} 所示。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.76\textwidth]{fig3_preference_vs_hotel_distance.png}
+\caption{喜好度与酒店通勤距离关系}
+\label{fig:prefdist}
+\end{figure}
+
+A2 喜好度最高，但耗时长且距离酒店并非最近；A3 距酒店最近且全天开放，适合作为低负荷缓冲景点；A4、A6 距酒店较远，在随机扰动下更容易形成时间风险。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.76\textwidth]{fig4_comfort_vs_physical_load.png}
+\caption{舒适游览时长与体力负荷关系}
+\label{fig:comfortload}
+\end{figure}
+
+图 \ref{fig:comfortload} 显示，A2、A4、A6 处于高负荷区域，其中 A2 舒适游览时长最长；A3、A7、A10 体力负荷较低，更适合作为行程缓冲节点。
+
+根据景点间车程矩阵，本文将车程不超过 0.5h 的组合视为具有联动游玩可能性，其中不超过 0.3h 的组合视为强联动组合。主要联动组合如表 \ref{tab:pairs} 所示。
+
+\begin{table}[H]
+\centering
+\caption{主要联动景点组合}
+\label{tab:pairs}
+\begin{tabular}{ccccc}
+\toprule
+排名 & 组合 & 景点间车程/h & 联动等级 & 组合特点 \\
+\midrule
+1 & A1+A10 & 0.2 & 强联动 & 人文休闲组合，通勤极短 \\
+2 & A2+A8 & 0.2 & 强联动 & 亲子主题组合，喜好度高 \\
+3 & A1+A8 & 0.3 & 强联动 & 人文与亲子组合，满意度较高 \\
+4 & A3+A7 & 0.2 & 强联动 & 滨水生态组合，体力负荷低 \\
+5 & A8+A10 & 0.3 & 强联动 & 亲子休闲与文创休闲组合 \\
+6 & A4+A9 & 0.3 & 强联动 & 远郊自然组合，但对扰动较敏感 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.80\textwidth]{fig5_linked_spot_network.png}
+\caption{景点联动网络图}
+\label{fig:network}
+\end{figure}
+
+由图 \ref{fig:network} 可知，A1、A2、A3、A8、A10 处于较密集联动区域，适合构成城市周边高效组合；A4、A6、A9 则形成相对独立的远郊自然景点组，虽然 A4+A9 空间距离较近，但因通勤总负荷和关闭时间压力较大，后续行程中应谨慎安排。
+
+\subsection{问题一结论}
+
+问题一得到的高优先级景点为 A1、A8、A10、A3；中优先级景点为 A2、A7、A5、A9；低优先级景点为 A6、A4。该结果为第二问提供了基础备选池：A1、A8、A10、A3 可优先考虑，A2 作为高喜好但高耗时景点应重点安排，A4、A6 等远郊高负荷景点应避免与其他高耗时景点叠加。
+
+% =========================================================
+\section{问题二：无随机扰动下的多目标景点优选与基准行程设计}
+
+\subsection{问题分析}
+
+问题二要求在不考虑随机堵车和排队的条件下，设计一套完整五日基准行程。该问题既需要确定选中景点集合，也需要确定每日景点顺序和时序安排。本文以前述景点优先级和联动关系为基础，建立多目标评价筛选模型。
+
+\subsection{决策变量与约束条件}
+
+设 $x_i$ 表示景点 $i$ 是否被选中，$y_{id}$ 表示景点 $i$ 是否安排在第 $d$ 天。景点数量约束为
+\begin{equation}
+5\leq \sum_{i=1}^{10}x_i\leq 8.
+\end{equation}
+每日景点数量约束为
+\begin{equation}
+1\leq \sum_{i=1}^{10}y_{id}\leq 2,\quad d=1,2,\ldots,5.
+\end{equation}
+景点唯一游览约束为
+\begin{equation}
+\sum_{d=1}^{5}y_{id}=x_i.
+\end{equation}
+游览时长和每日活动边界约束为
+\begin{equation}
+t_i\geq t_i^{\min},\qquad 7:00\leq T_d^{\rm start},\quad T_d^{\rm end}\leq 21:00.
+\end{equation}
+
+\subsection{多目标评价函数}
+
+设一个候选五日行程方案的综合评价函数为
+\begin{equation}
+Z=\alpha S-\beta D-\gamma B-\delta C,
+\end{equation}
+其中，$S$ 为行程喜好总满意度，$D$ 为总行车负荷，$B$ 为行程松紧不均衡惩罚，$C$ 为体力舒适度惩罚。具体为
+\begin{equation}
+S=\sum_{i=1}^{10}p_ix_i,
+\end{equation}
+\begin{equation}
+D=\sum_{d=1}^{5}D_d,
+\end{equation}
+\begin{equation}
+B=\sqrt{\frac{1}{5}\sum_{d=1}^{5}(T_d-\bar T)^2},
+\end{equation}
+\begin{equation}
+C=\max_d\sum_{i\in A_d}L_i+\sqrt{\frac{1}{5}\sum_{d=1}^{5}(L_d-\bar L)^2}.
+\end{equation}
+其中，$D_d$ 为第 $d$ 天总行车时长，$T_d$ 为第 $d$ 天活动总时长，$L_d$ 为第 $d$ 天体力负荷总和。整体舒适度在第二问中作为辅助惩罚项，用于避免同日连续安排高负荷景点。
+
+\subsection{求解方法}
+
+本文采用“每日可行方案枚举+动态规划筛选”的方法。首先枚举每一天的单景点和双景点方案，并根据开放时间、游览时间、车程和就餐时段进行可行性检验；然后在景点不重复、总景点数满足约束的前提下，组合五天候选日程并计算综合得分，得到基准方案。
+
+\subsection{基准行程结果}
+
+最终选中 8 个景点：A1 古城老街、A2 海洋乐园、A3 滨海浴场、A4 森林公园、A5 民俗古村、A8 亲子农庄、A9 山地观景台和 A10 文创小镇。未被选中的是 A6 山野溪谷和 A7 环湖湿地。具体安排如表 \ref{tab:q2plan} 所示。
+
+\begin{table}[H]
+\centering
+\caption{五日基准行程安排}
+\label{tab:q2plan}
+\begin{tabular}{ccccc}
+\toprule
+日期 & 安排景点 & 景点名称 & 当日结束时间 & 当日行车时长/h \\
+\midrule
+第 1 天 & A5 & 民俗古村 & 16:42 & 1.2 \\
+第 2 天 & A1 $\rightarrow$ A10 & 古城老街 $\rightarrow$ 文创小镇 & 17:12 & 1.2 \\
+第 3 天 & A2 $\rightarrow$ A8 & 海洋乐园 $\rightarrow$ 亲子农庄 & 18:12 & 1.7 \\
+第 4 天 & A4 $\rightarrow$ A9 & 森林公园 $\rightarrow$ 山地观景台 & 18:18 & 2.8 \\
+第 5 天 & A3 & 滨海浴场 & 17:36 & 0.6 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+该方案共安排 8 个景点，满足题目规定的景点数量约束；每日安排 1 至 2 个景点，满足每日最多两个景点的要求。需要说明的是，本节基准行程表主要展示代码输出的无随机扰动理想时序；在第三问中，为进行更保守的可靠性评估，进一步补充纳入第 1 至第 4 天返回酒店后的晚餐，并将通用耗时按 $\pm20\%$ 进行随机模拟。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.78\textwidth]{fig6_daily_driving_load.png}
+\caption{基准行程每日行车负荷}
+\label{fig:q2drive}
+\end{figure}
+
+由图 \ref{fig:q2drive} 可知，第 4 天行车负荷最高，为 2.8h，主要原因是 A4 和 A9 属于远郊自然景点组；第 5 天行车负荷最低，主要因为 A3 距酒店较近。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.78\textwidth]{fig7_daily_activity_duration.png}
+\caption{基准行程每日活动时长}
+\label{fig:q2activity}
+\end{figure}
+
+由图 \ref{fig:q2activity} 可知，五天活动时长整体较均衡，均低于 14h 参考边界。第 3 天和第 4 天活动时长较高，且均为双景点日，因此后续随机扰动分析中应重点关注。
+
+\subsection{问题二结论}
+
+第二问所得基准方案在理想条件下满足题目硬性约束，并充分利用第一问识别出的联动组合。第 1 天以 A5 轻量开局，第 2 天为 A1+A10 人文休闲组合，第 3 天为 A2+A8 亲子主题组合，第 4 天为 A4+A9 自然探索组合，第 5 天以 A3 海边收尾。该方案在无随机扰动下可行，但第 3、4 天存在高耗时和双景点叠加特征，可能在第三问中暴露出稳定性问题。
+
+% =========================================================
+\section{问题三：随机扰动下的基准方案稳定性量化评估}
+
+\subsection{随机扰动模型}
+
+问题三重点分析第二问基准方案，而不是重新构造另一套方案。本文将一次完整五日行程视为一次蒙特卡罗模拟，重复模拟 $N=20000$ 次，统计整体可靠度、每日失败概率、失败类型和扰动贡献。
+
+\subsubsection{条件堵车模型}
+
+题目给出了发生拥堵后的延时分布，但未明确给出拥堵发生概率。本文引入伯努利变量描述是否发生拥堵。设高峰拥堵概率为 $p_1$，平峰拥堵概率为 $p_2$，道路额外延时为
+\begin{equation}
+\Delta t_{\rm road}=\begin{cases}
+U(1,4), & \text{高峰时段且发生拥堵},\\
+U(0,1.5), & \text{平峰时段且发生拥堵},\\
+0, & \text{未发生拥堵}.
+\end{cases}
+\end{equation}
+本文设置三种情景，如表 \ref{tab:scen} 所示。
+
+\begin{table}[H]
+\centering
+\caption{道路拥堵情景参数}
+\label{tab:scen}
+\begin{tabular}{cccc}
+\toprule
+情景 & 高峰拥堵概率 $p_1$ & 平峰拥堵概率 $p_2$ & 含义 \\
+\midrule
+轻度扰动 & 0.10 & 0.03 & 道路总体较顺畅 \\
+中度扰动 & 0.20 & 0.08 & 五一常规拥堵 \\
+强扰动 & 0.35 & 0.15 & 五一高压拥堵 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{入园排队模型}
+
+入园排队时间按到达景点时刻直接抽样：
+\begin{equation}
+\Delta t_{\rm queue}=\begin{cases}
+U(0.5,3), & 9:00\leq t<12:00,\\
+U(0,1), & t<9:00 \text{ 或 } t\geq 12:00.
+\end{cases}
+\end{equation}
+
+\subsubsection{通用耗时浮动模型}
+
+题目规定起床早餐整装、单次正餐就餐、酒店入住/退房等通用耗时可在 $\pm20\%$ 范围内合理微调。本文采用各环节独立随机模拟：
+\begin{equation}
+T=T_0\cdot U(0.8,1.2),
+\end{equation}
+其中，$T_0$ 为该环节标准耗时。具体包括起床早餐整装 1.5h、午餐/晚餐 1.0h、入住/退房 0.5h。稳定性评估中，第 1 至第 4 天返回酒店后的晚餐纳入活动时间；第 5 天由于退房返家，晚餐不计入片区内活动。
+
+\subsection{可靠度判定标准}
+
+每次模拟中，若某一天出现以下任一情况，则判定该日失败：
+\begin{enumerate}[label=(\arabic*)]
+    \item 某一景点实际可游览时间低于其最小游览时长；
+    \item 当日活动结束时间超过 21:00。
+\end{enumerate}
+若五天中任意一天失败，则本次五日行程失败。整体可靠度定义为
+\begin{equation}
+P_{\rm reliable}=1-\frac{N_{\rm fail}}{N},
+\end{equation}
+其中，$N$ 为模拟总次数，$N_{\rm fail}$ 为五日行程失败次数。
+
+\subsection{整体可靠度分析}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.78\textwidth]{fig8_timeflex_reliability_by_scenario.png}
+\caption{不同扰动情景下基准方案整体可靠度}
+\label{fig:q3rel}
+\end{figure}
+
+由图 \ref{fig:q3rel} 可知，在轻度、中度和强扰动情景下，基准方案整体可靠度分别约为 27.18\%、16.44\% 和 6.63\%，均低于 90\% 的稳定性要求。这说明第二问基准方案虽然在无随机扰动条件下可行，但在五一随机扰动环境下抗扰动能力明显不足。
+
+\subsection{每日失败概率与失败类型拆解}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.84\textwidth]{fig9_timeflex_daily_failure_decomposition.png}
+\caption{中度扰动情景下每日失败概率拆解}
+\label{fig:q3daily}
+\end{figure}
+
+图 \ref{fig:q3daily} 表明，第 4 天 A4$\rightarrow$A9 的失败概率最高，约为 68.80\%；第 3 天 A2$\rightarrow$A8 次之，约为 34.30\%；第 5 天 A3 最稳定，失败概率接近 0。失败类型主要为景点最小游览时长不达标，而不是单纯当日活动超时。尤其是 A9 和 A8 作为双景点日中的第二个景点，容易受到前序通勤、排队和游览耗时扰动的挤压。
+
+\subsection{扰动来源分析}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.84\textwidth]{fig10_timeflex_daily_delay_components.png}
+\caption{中度扰动情景下每日扰动组成}
+\label{fig:q3comp}
+\end{figure}
+
+由图 \ref{fig:q3comp} 可知，第 3 天和第 4 天排队延时较大，均超过 2h，说明双景点日累计排队压力较大；第 4 天道路延时也最高，反映出 A4、A9 远郊组合的通勤风险。通用耗时浮动各日贡献相对较小，但会进一步压缩行程缓冲时间。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.70\textwidth]{fig14_timeflex_delay_contribution.png}
+\caption{道路、排队与通用耗时浮动贡献比例}
+\label{fig:q3contri}
+\end{figure}
+
+由图 \ref{fig:q3contri} 可知，入园排队是基准方案随机扰动的主要来源，贡献比例约为 55.44\%；道路堵车贡献约为 34.35\%；通用耗时浮动贡献约为 10.21\%。因此，基准方案的不稳定性主要来自景点端排队和道路端拥堵。
+
+\subsection{结束时间分布与景点层面风险}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.84\textwidth]{fig11_timeflex_end_time_distribution.png}
+\caption{中度扰动情景下每日结束时间分布}
+\label{fig:q3end}
+\end{figure}
+
+图 \ref{fig:q3end} 显示，第 4 天的 90\% 分位结束时间已经超过 21:00，95\% 分位进一步延后，表明该日对极端扰动最敏感。第 3 天高分位结束时间也接近或超过 21:00，说明其存在一定边界风险。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{fig12_timeflex_spot_visit_failure.png}
+\caption{景点层面最小游览时长不达标概率}
+\label{fig:q3spot}
+\end{figure}
+
+图 \ref{fig:q3spot} 显示，A9 山地观景台的不达标概率最高，其次为 A8 亲子农庄和 A5 民俗古村。A9 和 A8 均处于双景点日的后续位置，说明基准方案的主要风险常常不是出现在第一个景点，而是出现在被前序扰动压缩的第二个景点。
+
+\subsection{结构性薄弱点识别与整体舒适度解释}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{fig13_timeflex_weakness_ranking.png}
+\caption{基准方案结构性薄弱点排序}
+\label{fig:q3weak}
+\end{figure}
+
+图 \ref{fig:q3weak} 表明，第 4 天 A4$\rightarrow$A9 是最主要薄弱点，第 3 天 A2$\rightarrow$A8 次之。该结果可由第一问引入的整体舒适度指标进一步解释。整体舒适度并不直接进入第三问的随机模拟公式，而是用于解释基准方案在扰动下暴露出的结构性弱点。
+
+第 4 天中，A4 森林公园体力负荷高、舒适游览时长较长、距酒店远且关闭较早，导致该日整体时间弹性不足。随机扰动发生后，前序景点和通勤环节占用大量时间，使后续 A9 山地观景台的最小游览时长容易被压缩，因此该日成为基准方案最主要结构性薄弱点。第 3 天中，A2 海洋乐园虽然家庭喜好度最高，但其舒适游览时长最长、体力负荷高且排队风险较大；当 A2 后接 A8 时，前序景点的时间扰动会传递至后续景点，导致 A8 亲子农庄有效游览时间被压缩。相反，第 5 天仅安排 A3 滨海浴场，A3 全天开放、通勤短、体力负荷低，因而能够吸收一定随机扰动，模拟中表现最稳定。由此可见，整体舒适度指标能够有效解释第三问中不同日期稳定性差异。
+
+\subsection{通用耗时浮动模拟验证}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{fig15_timeflex_nonrandom_time_components.png}
+\caption{通用耗时随机模拟结果}
+\label{fig:q3timeflex}
+\end{figure}
+
+图 \ref{fig:q3timeflex} 显示，通用耗时模拟后的均值仍接近题目给定标准耗时。原因是 $U(0.8,1.2)$ 的均值为 1，因此 $T=T_0U(0.8,1.2)$ 在长期模拟下均值接近 $T_0$。这说明模型既保持了题目标准耗时的中心水平，又刻画了实际出游中吃饭、整装、入住/退房等环节的随机波动。
+
+\subsection{问题三结论}
+
+基准方案在随机扰动下整体可靠度不足，无法达到 90\% 稳定可靠度要求。主要薄弱点集中在第 4 天 A4$\rightarrow$A9 和第 3 天 A2$\rightarrow$A8。失败主要表现为后续景点最小游览时长不达标，主要扰动来源为入园排队，其次为道路堵车，通用耗时浮动贡献较小但会进一步压缩缓冲时间。若要求整体可靠度达到 90\% 以上，应减少高负荷双景点组合，将 A2、A4 等高耗时景点单独成日，或用 A3、A7、A10 等低负荷、时间弹性较强的景点作为缓冲。
+
+% =========================================================
+\section{模型评价与改进}
+
+\subsection{模型优点}
+
+\begin{enumerate}[label=(\arabic*)]
+    \item \textbf{指标体系完整。} 在题目四个维度基础上引入整体舒适度，使模型更符合家庭连续五日自驾游的实际体验。
+    \item \textbf{评价结果可解释。} 熵权法减少主观赋权影响，TOPSIS 综合优先指数能够解释为什么高喜好景点不一定排在最前。
+    \item \textbf{行程生成效率较高。} “每日可行方案枚举+动态规划筛选”避免了直接全局穷举导致的组合爆炸。
+    \item \textbf{随机分析较全面。} 第三问同时考虑道路堵车、入园排队和通用耗时 $\pm20\%$ 浮动，并给出整体可靠度、每日失败概率、景点层面风险和扰动贡献。
+\end{enumerate}
+
+\subsection{模型不足}
+
+\begin{enumerate}[label=(\arabic*)]
+    \item 道路拥堵发生概率题目未明确给出，本文采用情景参数模拟，仍具有一定假设性。
+    \item 景点排队模型只依据入园时段划分，未考虑不同景点真实客流差异。
+    \item 体力负荷等级由景点类型和游览特征人工赋值，虽具备解释性，但仍存在主观性。
+    \item 第二问基准方案追求无随机扰动下综合表现，第三问结果表明其稳定性不足，说明理想最优和稳健最优之间存在冲突。
+\end{enumerate}
+
+\subsection{改进方向}
+
+\begin{enumerate}[label=(\arabic*)]
+    \item 可利用历史交通数据或实时导航数据估计高峰、平峰拥堵概率，使条件堵车模型更加客观。
+    \item 可针对不同景点建立差异化排队分布，例如主题乐园和自然景区采用不同排队参数。
+    \item 可在第二问中直接加入可靠度约束，构建“稳健行程优化模型”，而不是先求理想基准方案再进行稳定性检验。
+    \item 可进一步细化整体舒适度指标，引入步行距离、海拔变化、室内外环境和儿童友好度等因素。
+    \item 可将第 1 至第 4 天晚餐直接纳入第二问基准时序，并重新筛选基准方案，使第二问和第三问的时间口径完全一致。
+\end{enumerate}
+
+% =========================================================
+\section{结论}
+
+本文围绕“五一”五日自驾景点优选与行程规划问题，建立了景点评价、行程规划和随机稳定性评估模型。问题一通过五维评价体系、熵权法和 TOPSIS 得到综合优先级，识别出 A1、A8、A10、A3 为高优先级景点，并给出主要联动组合。问题二在无随机扰动下生成包含 8 个景点的五日基准行程，满足题目基本约束。问题三采用条件堵车模型、入园排队模型和通用耗时 $\pm20\%$ 独立随机扰动，对基准方案进行蒙特卡罗模拟，发现基准方案在随机扰动下可靠度不足，第 4 天 A4--A9 是最主要薄弱点，第 3 天 A2--A8 次之，主要失败原因是后续景点最小游览时长不达标。
+
+总体来看，基准方案适合作为无随机扰动条件下的高满意度方案，但若面向五一高峰环境并要求达到 90\% 以上稳定可靠度，则需进一步稳健化调整，减少高耗时、高负荷、远距离双景点组合，并增加低负荷、时间弹性强的缓冲景点。
+
+% =========================================================
+\begin{thebibliography}{99}
+\bibitem{entropy} Shannon C. E. A mathematical theory of communication. \textit{Bell System Technical Journal}, 1948.
+\bibitem{topsis} Hwang C. L., Yoon K. \textit{Multiple Attribute Decision Making: Methods and Applications}. Springer, 1981.
+\bibitem{mc} Fishman G. S. \textit{Monte Carlo: Concepts, Algorithms, and Applications}. Springer, 1996.
+\bibitem{mcm} 姜启源, 谢金星, 叶俊. 数学模型（第五版）. 北京: 高等教育出版社, 2018.
+\end{thebibliography}
+
+\appendix
+\section{附录：代码和数据说明}
+
+本文配套代码主要包括：第一问景点指标计算、熵权法和 TOPSIS 排序；第二问每日可行方案枚举和动态规划筛选；第三问条件堵车、入园排队和通用耗时浮动的蒙特卡罗模拟。论文插图均由代码自动生成，并随 LaTeX 工程一并提供。
+
+\end{document}
